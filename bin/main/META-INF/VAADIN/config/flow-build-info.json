@@ -1,0 +1,18 @@
+{
+  "productionMode": false,
+  "eagerServerLoad": false,
+  "npmFolder": "C:\\Users\\umidu\\OneDrive\\Desktop\\Geek Labs\\Jmix\\HRMSystem",
+  "node.version": "v22.13.1",
+  "node.download.root": "https://nodejs.org/dist/",
+  "frontendFolder": "C:\\Users\\umidu\\OneDrive\\Desktop\\Geek Labs\\Jmix\\HRMSystem\\.\\src\\main\\frontend",
+  "connect.javaSourceFolder": "C:\\Users\\umidu\\OneDrive\\Desktop\\Geek Labs\\Jmix\\HRMSystem\\src\\main\\java",
+  "javaResourceFolder": "C:\\Users\\umidu\\OneDrive\\Desktop\\Geek Labs\\Jmix\\HRMSystem\\src\\main\\resources",
+  "connect.applicationProperties": "C:\\Users\\umidu\\OneDrive\\Desktop\\Geek Labs\\Jmix\\HRMSystem\\src\\main\\resources\\application.properties",
+  "connect.openApiFile": "C:\\Users\\umidu\\OneDrive\\Desktop\\Geek Labs\\Jmix\\HRMSystem\\build\\generated-resources\\openapi.json",
+  "project.frontend.generated": "C:\\Users\\umidu\\OneDrive\\Desktop\\Geek Labs\\Jmix\\HRMSystem\\.\\src\\main\\frontend\\generated",
+  "pnpm.enable": false,
+  "bun.enable": false,
+  "require.home.node": false,
+  "build.folder": "build",
+  "react.enable": true
+}
