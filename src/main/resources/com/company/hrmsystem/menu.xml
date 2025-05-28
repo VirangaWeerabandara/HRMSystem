@@ -3,6 +3,11 @@
 
     <menu id="application" title="msg://com.company.hrmsystem/menu.application.title" opened="true">
         <item view="User.list" title="msg://com.company.hrmsystem.view.user/UserListView.title"/>
+        <item view="LeaveRequest.list"
+              title="msg://com.company.hrmsystem.view.leaverequest/leaveRequestListView.title"/>
+        <item view="CreateLeaveRequest.list"
+              title="msg://com.company.hrmsystem.view.leaverequest/createLeaveRequestListView.title"/>
+        <item view="LeaveType.list" title="msg://com.company.hrmsystem.view.leavetype/leaveTypeListView.title"/>
     </menu>
 
 </menu-config>

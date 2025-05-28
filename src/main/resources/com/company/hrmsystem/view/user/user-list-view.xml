@@ -5,7 +5,9 @@
     <data>
         <collection id="usersDc"
                     class="com.company.hrmsystem.entity.User">
-            <fetchPlan extends="_base"/>
+            <fetchPlan extends="_base">
+                <property name="manager" fetchPlan="_base"/>
+            </fetchPlan>
             <loader id="usersDl" readOnly="true">
                 <query>
                     <![CDATA[select e from User e order by e.username]]>
@@ -64,6 +66,9 @@
                 <column property="email"/>
                 <column property="timeZoneId"/>
                 <column property="active"/>
+                <column property="manager"/>
+                <column property="joinedDate"/>
+                <column property="totalLeaves"/>
             </columns>
         </dataGrid>
         <hbox id="lookupActions" visible="false">
