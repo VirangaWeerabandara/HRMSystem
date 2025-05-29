@@ -12,7 +12,12 @@
             </fetchPlan>
             <loader id="leaveRequestsDl" readOnly="true">
                 <query>
-                    <![CDATA[select e from LeaveRequest e]]>
+                    <![CDATA[select e from LeaveRequest e where e.approver.id = :current_user_id]]>
+                    <condition>
+                        <c:jpql>
+                            <c:where>e.approver.id = :current_user_id</c:where>
+                        </c:jpql>
+                    </condition>
                 </query>
             </loader>
         </collection>

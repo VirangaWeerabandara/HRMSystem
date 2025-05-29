@@ -285,9 +285,12 @@ public class User implements JmixUserDetails, HasTimeZone {
                 .sum();
     }
 
-    /**
-     * Fallback calculation method using the original logic with fixed value
-     */
+    
+    @PrePersist
+    public void onPostLoadAndPrePersist() {
+        calculateInitialLeaves();
+    }
+
     private void fallbackCalculateLeaves() {
         final int ANNUAL_LEAVE_DAYS = 36;
         final int MONTHS_IN_YEAR = 12;
@@ -309,9 +312,7 @@ public class User implements JmixUserDetails, HasTimeZone {
         // Default constructor
     }
 
-    @PostUpdate
-    @PostPersist
-    @PostLoad
+
     public void initializeLeaves() {
         // Always recalculate leaves when the entity is loaded or updated
         calculateInitialLeaves();
