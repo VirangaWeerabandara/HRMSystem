@@ -3,8 +3,10 @@ package com.company.hrmsystem.view.leaverequest;
 import com.company.hrmsystem.entity.LeaveRequest;
 import com.company.hrmsystem.entity.LeaveStatus;
 import com.company.hrmsystem.entity.User;
+import com.company.hrmsystem.service.LeaveRequestService;
 import com.company.hrmsystem.view.main.MainView;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValueAndElement;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -118,6 +120,9 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
             viewValidation.focusProblemComponent(validationErrors);
             return;
         }
+
+        calculateWorkingDays(item);
+
         dataContext.save();
         leaveRequestsDc.replaceItem(item);
         updateControls(false);
@@ -169,5 +174,36 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
 
     private ViewValidation getViewValidation() {
         return getApplicationContext().getBean(ViewValidation.class);
+    }
+
+
+    @Subscribe("startDateField")
+    public void onStartDateFieldValueChange(final HasValue.ValueChangeEvent<?> event) {
+        updateWorkingDays();
+    }
+
+    @Subscribe("endDateField")
+    public void onEndDateFieldValueChange(final HasValue.ValueChangeEvent<?> event) {
+        updateWorkingDays();
+    }
+
+    private void updateWorkingDays() {
+        LeaveRequest item = leaveRequestDc.getItem();
+        if (item != null && item.getStartDate() != null && item.getEndDate() != null) {
+            calculateWorkingDays(item);
+        }
+    }
+
+    private void calculateWorkingDays(LeaveRequest leaveRequest) {
+        // Get the LeaveRequestService from the application context
+        LeaveRequestService leaveRequestService = getApplicationContext().getBean(LeaveRequestService.class);
+
+        // Calculate working days
+        Integer workingDays = leaveRequestService.calculateWorkingDays(
+                leaveRequest.getStartDate(),
+                leaveRequest.getEndDate());
+
+        // Set the calculated working days
+        leaveRequest.setWorkingDays(workingDays);
     }
 }

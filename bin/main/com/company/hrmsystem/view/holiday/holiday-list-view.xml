@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
+      title="msg://holidayListView.title"
+      focusComponent="holidaysDataGrid">
+    <data>
+        <collection id="holidaysDc"
+                    class="com.company.hrmsystem.entity.Holiday">
+            <fetchPlan extends="_base"/>
+            <loader id="holidaysDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from Holiday e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
+            <pagination component="pagination"/>
+        </urlQueryParameters>
+    </facets>
+    <actions>
+        <action id="selectAction" type="lookup_select"/>
+        <action id="discardAction" type="lookup_discard"/>
+    </actions>
+    <layout>
+        <genericFilter id="genericFilter"
+                       dataLoader="holidaysDl">
+            <properties include=".*"/>
+        </genericFilter>
+        <hbox id="buttonsPanel" classNames="buttons-panel">
+            <button id="createButton" action="holidaysDataGrid.createAction"/>
+            <button id="editButton" action="holidaysDataGrid.editAction"/>
+            <button id="removeButton" action="holidaysDataGrid.removeAction"/>
+            <simplePagination id="pagination" dataLoader="holidaysDl"/>
+        </hbox>
+        <dataGrid id="holidaysDataGrid"
+                  width="100%"
+                  minHeight="20em"
+                  dataContainer="holidaysDc"
+                  columnReorderingAllowed="true">
+            <actions>
+                <action id="createAction" type="list_create"/>
+                <action id="editAction" type="list_edit"/>
+                <action id="removeAction" type="list_remove"/>
+            </actions>
+            <columns resizable="true">
+                <column property="name"/>
+                <column property="holidayDate"/>
+                <column property="description"/>
+            </columns>
+        </dataGrid>
+        <hbox id="lookupActions" visible="false">
+            <button id="selectButton" action="selectAction"/>
+            <button id="discardButton" action="discardAction"/>
+        </hbox>
+    </layout>
+</view>

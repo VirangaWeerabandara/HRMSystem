@@ -1,5 +1,6 @@
 package com.company.hrmsystem.entity;
 
+import com.company.hrmsystem.service.LeaveRequestService;
 import io.jmix.core.DeletePolicy;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.entity.annotation.OnDeleteInverse;
@@ -7,6 +8,7 @@ import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -23,6 +25,9 @@ public class LeaveRequest {
     @Column(name = "ID", nullable = false)
     @Id
     private UUID id;
+
+    @Column(name = "WORKING_DAYS")
+    private Integer workingDays;
 
     @OnDeleteInverse(DeletePolicy.CASCADE)
     @JoinColumn(name = "USER_ID", nullable = false)
@@ -57,6 +62,19 @@ public class LeaveRequest {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private LeaveType leaveType;
+
+    @Transient
+    @Autowired
+    private LeaveRequestService leaveRequestService;
+
+
+    public Integer getWorkingDays() {
+        return workingDays;
+    }
+
+    public void setWorkingDays(Integer workingDays) {
+        this.workingDays = workingDays;
+    }
 
     public LeaveType getLeaveType() {
         return leaveType;
@@ -121,5 +139,6 @@ public class LeaveRequest {
     public void setId(UUID id) {
         this.id = id;
     }
+
 
 }

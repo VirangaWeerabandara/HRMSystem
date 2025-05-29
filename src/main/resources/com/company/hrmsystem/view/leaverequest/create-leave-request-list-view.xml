@@ -44,12 +44,11 @@
                           dataContainer="leaveRequestsDc"
                           columnReorderingAllowed="true">
                     <columns resizable="true">
-                        <column property="user"/>
                         <column property="startDate"/>
                         <column property="endDate"/>
-                        <column property="reason"/>
                         <column property="leaveStatus"/>
                         <column property="leaveType"/>
+                        <column property="workingDays"/>
                     </columns>
                     <actions>
                         <action id="createAction" type="list_create"/>
@@ -74,12 +73,9 @@
                         <responsiveStep minWidth="0" columns="1"/>
                         <responsiveStep minWidth="40em" columns="2"/>
                     </responsiveSteps>
-                    <entityPicker id="userField" property="user" readOnly="true"/>
-                    <entityPicker id="approverField" property="approver" readOnly="true"/>
                     <datePicker id="startDateField" property="startDate"/>
                     <datePicker id="endDateField" property="endDate"/>
                     <textArea id="reasonField" height="9.5em" property="reason"/>
-                    <comboBox id="leaveStatusField" property="leaveStatus" readOnly="true"/>
                     <entityPicker id="leaveTypeField" property="leaveType">
                         <actions>
                             <action id="entityLookup" type="entity_lookup"/>
