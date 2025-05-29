@@ -14,7 +14,8 @@ import java.util.UUID;
 @JmixEntity
 @Table(name = "LEAVE_REQUEST", indexes = {
         @Index(name = "IDX_LEAVE_REQUEST_USER", columnList = "USER_ID"),
-        @Index(name = "IDX_LEAVE_REQUEST_APPROVER", columnList = "APPROVER_ID")
+        @Index(name = "IDX_LEAVE_REQUEST_APPROVER", columnList = "APPROVER_ID"),
+        @Index(name = "IDX_LEAVE_REQUEST_LEAVE_TYPE", columnList = "LEAVE_TYPE_ID")
 })
 @Entity
 public class LeaveRequest {
@@ -57,7 +58,6 @@ public class LeaveRequest {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private LeaveType leaveType;
 
-    // Add getters and setters
     public LeaveType getLeaveType() {
         return leaveType;
     }

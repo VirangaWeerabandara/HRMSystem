@@ -15,8 +15,6 @@ public class LeaveResetService {
     @Autowired
     private DataManager dataManager;
 
-    private static final int ANNUAL_LEAVE_DAYS = 36;
-
     @Scheduled(cron = "0 1 0 1 1 *") // Run at 00:01 AM on January 1st
     @Transactional
     public void resetAnnualLeaves() {
@@ -25,7 +23,8 @@ public class LeaveResetService {
                 .list();
 
         for (User user : users) {
-            user.setTotalLeaves(ANNUAL_LEAVE_DAYS);
+            // Use the refreshTotalLeaves method instead of fixed constant
+            user.refreshTotalLeaves();
             dataManager.save(user);
         }
     }

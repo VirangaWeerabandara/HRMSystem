@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
+      title="msg://createLeaveRequestListView.title"
+      focusComponent="leaveRequestsDataGrid">
+    <data>
+        <collection id="leaveRequestsDc"
+                    class="com.company.hrmsystem.entity.LeaveRequest">
+            <fetchPlan extends="_base">
+                <property name="user" fetchPlan="_instance_name"/>
+                <property name="leaveType" fetchPlan="_base"/>
+            </fetchPlan>
+            <loader id="leaveRequestsDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from LeaveRequest e where e.user = :currentUser]]>
+                </query>
+            </loader>
+        </collection>
+        <instance id="leaveRequestDc"
+                  class="com.company.hrmsystem.entity.LeaveRequest">
+            <fetchPlan extends="_base">
+                <property name="user" fetchPlan="_instance_name"/>
+                <property name="leaveType" fetchPlan="_base"/>
+            </fetchPlan>
+            <loader id="leaveRequestDl"/>
+        </instance>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <urlQueryParameters>
+            <pagination component="pagination"/>
+        </urlQueryParameters>
+    </facets>
+    <actions>
+        <action id="selectAction" type="lookup_select"/>
+        <action id="discardAction" type="lookup_discard"/>
+    </actions>
+    <layout padding="false">
+        <vbox id="layoutWrapper" classNames="master-detail-layout" height="100%">
+            <vbox id="listLayout" height="60%" width="100%">
+                <dataGrid id="leaveRequestsDataGrid"
+                          width="100%"
+                          minHeight="20em"
+                          dataContainer="leaveRequestsDc"
+                          columnReorderingAllowed="true">
+                    <columns resizable="true">
+                        <column property="user"/>
+                        <column property="startDate"/>
+                        <column property="endDate"/>
+                        <column property="reason"/>
+                        <column property="leaveStatus"/>
+                        <column property="leaveType"/>
+                    </columns>
+                    <actions>
+                        <action id="createAction" type="list_create"/>
+                        <action id="editAction" type="list_edit"/>
+                        <action id="removeAction" type="list_remove"/>
+                    </actions>
+                </dataGrid>
+                <hbox id="buttonsPanel" classNames="buttons-panel">
+                    <button id="createButton" action="leaveRequestsDataGrid.createAction"/>
+                    <button id="editButton" action="leaveRequestsDataGrid.editAction"/>
+                    <button id="removeButton" action="leaveRequestsDataGrid.removeAction"/>
+                    <simplePagination id="pagination" dataLoader="leaveRequestsDl"/>
+                </hbox>
+                <hbox id="lookupActions" visible="false">
+                    <button id="selectButton" action="selectAction"/>
+                    <button id="discardButton" action="discardAction"/>
+                </hbox>
+            </vbox>
+            <vbox id="detailsLayout" height="40% " width="100%">
+                <formLayout id="form" dataContainer="leaveRequestDc">
+                    <responsiveSteps>
+                        <responsiveStep minWidth="0" columns="1"/>
+                        <responsiveStep minWidth="40em" columns="2"/>
+                    </responsiveSteps>
+                    <entityPicker id="userField" property="user" readOnly="true"/>
+                    <entityPicker id="approverField" property="approver" readOnly="true"/>
+                    <datePicker id="startDateField" property="startDate"/>
+                    <datePicker id="endDateField" property="endDate"/>
+                    <textArea id="reasonField" height="9.5em" property="reason"/>
+                    <comboBox id="leaveStatusField" property="leaveStatus" readOnly="true"/>
+                    <entityPicker id="leaveTypeField" property="leaveType">
+                        <actions>
+                            <action id="entityLookup" type="entity_lookup"/>
+                            <action id="entityClear" type="entity_clear"/>
+                        </actions>
+                    </entityPicker>
+                </formLayout>
+                <hbox id="detailActions">
+                    <button id="saveButton" text="msg:///actions.Save" icon="CHECK" themeNames="primary"/>
+                    <button id="cancelButton" text="msg:///actions.Cancel" icon="BAN"/>
+                </hbox>
+            </vbox>
+        </vbox>
+    </layout>
+</view>

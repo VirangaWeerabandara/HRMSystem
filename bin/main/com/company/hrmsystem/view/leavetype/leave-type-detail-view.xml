@@ -23,8 +23,9 @@
                 <responsiveStep minWidth="40em" columns="2"/>
             </responsiveSteps>
             <textField id="nameField" property="name"/>
+            <textField id="descriptionField" property="description"/>
+            <textField id="defaultDaysField" property="defaultDays"/>
             <checkbox id="activeField" property="active"/>
-            <textField id="noOfDaysField" property="noOfDays"/>
         </formLayout>
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveAction"/>

@@ -48,9 +48,8 @@
             </actions>
             <columns resizable="true">
                 <column property="name"/>
-                <column property="description"/>
-                <column property="defaultDays"/>
                 <column property="active"/>
+                <column property="noOfDays"/>
             </columns>
         </dataGrid>
         <hbox id="lookupActions" visible="false">

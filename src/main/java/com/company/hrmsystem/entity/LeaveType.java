@@ -1,10 +1,14 @@
 package com.company.hrmsystem.entity;
 
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
+import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.util.UUID;
 
@@ -17,28 +21,33 @@ public class LeaveType {
     @Id
     private UUID id;
 
-    @Column(name = "NAME", nullable = false, unique = true)
+    @InstanceName
+    @Column(name = "NAME", nullable = false)
     @NotNull
     private String name;
 
-    @Column(name = "DESCRIPTION")
-    private String description;
+    @Column(name = "ACTIVE")
+    private Boolean active;
 
-    @Min(0)
-    @Column(name = "DEFAULT_DAYS", nullable = false)
+    @Positive
+    @Column(name = "NO_OF_DAYS", nullable = false)
     @NotNull
-    private Integer defaultDays;
+    private Integer noOfDays;
 
-    @Column(name = "ACTIVE", nullable = false)
-    @NotNull
-    private Boolean active = true;
-
-    public UUID getId() {
-        return id;
+    public Boolean getActive() {
+        return active;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Integer getNoOfDays() {
+        return noOfDays;
+    }
+
+    public void setNoOfDays(Integer noOfDays) {
+        this.noOfDays = noOfDays;
     }
 
     public String getName() {
@@ -49,27 +58,12 @@ public class LeaveType {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public UUID getId() {
+        return id;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setId(UUID id) {
+        this.id = id;
     }
 
-    public Integer getDefaultDays() {
-        return defaultDays;
-    }
-
-    public void setDefaultDays(Integer defaultDays) {
-        this.defaultDays = defaultDays;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
 }
