@@ -70,11 +70,20 @@ public class LeaveCalculationService {
 
             System.out.println("Found " + users.size() + " users to update");
 
+            boolean noActiveLeaveTypes = activeLeaveTypes.isEmpty();
+
             for (User user : users) {
                 if (user.getJoinedDate() != null) {
-                    // Force recalculation
                     injectDependencies(user);
-                    user.calculateInitialLeaves();
+
+                    if (noActiveLeaveTypes) {
+                        // If no active leave types, use fallback calculation
+                        user.fallbackCalculateLeaves();
+                        System.out.println("Using fallback calculation for user: " + user.getUsername());
+                    } else {
+                        // Otherwise use normal calculation
+                        user.calculateInitialLeaves();
+                    }
 
                     // Save the updated user
                     dataManager.save(user);

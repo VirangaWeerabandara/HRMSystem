@@ -42,7 +42,6 @@
             </entityPicker>
             <datePicker id="joinedDateField" property="joinedDate"/>
             <textField id="totalLeavesField" property="totalLeaves"/>
-            <!--            <textField id="totalLeavesField" property="totalLeaves"/>-->
         </formLayout>
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveAction"/>

@@ -22,7 +22,8 @@ public class LeaveTypeChangedListener {
         EntityChangedEvent.Type changeType = event.getType();
 
         if (changeType == EntityChangedEvent.Type.CREATED ||
-                changeType == EntityChangedEvent.Type.UPDATED) {
+                changeType == EntityChangedEvent.Type.UPDATED ||
+                changeType == EntityChangedEvent.Type.DELETED) {
 
             System.out.println("Significant LeaveType change detected: " + changeType);
 
@@ -37,7 +38,7 @@ public class LeaveTypeChangedListener {
                 }
             }
 
-            // Only recalculate if we're creating a new type or changed relevant fields
+            // Recalculate for all significant events including deletion
             leaveCalculationService.recalculateLeavesForAllUsers();
         } else {
             System.out.println("Non-significant LeaveType event detected: " + changeType);

@@ -285,13 +285,13 @@ public class User implements JmixUserDetails, HasTimeZone {
                 .sum();
     }
 
-    
+
     @PrePersist
     public void onPostLoadAndPrePersist() {
         calculateInitialLeaves();
     }
 
-    private void fallbackCalculateLeaves() {
+    public void fallbackCalculateLeaves() {
         final int ANNUAL_LEAVE_DAYS = 36;
         final int MONTHS_IN_YEAR = 12;
         final double LEAVES_PER_MONTH = (double) ANNUAL_LEAVE_DAYS / MONTHS_IN_YEAR;
