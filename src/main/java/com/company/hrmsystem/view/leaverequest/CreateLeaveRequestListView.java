@@ -22,8 +22,11 @@ import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.model.*;
 import io.jmix.flowui.view.*;
+import io.jmix.flowui.Dialogs;
 import io.jmix.core.security.CurrentAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 @Route(value = "create-leave-requests", layout = MainView.class)
 @ViewController(id = "CreateLeaveRequest.list")
@@ -110,6 +113,12 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
         updateControls(true);
     }
 
+    @Autowired
+    private com.company.hrmsystem.service.UserLeaveSummaryService userLeaveSummaryService;
+
+    @Autowired
+    private Dialogs dialogs;
+
     @Subscribe("saveButton")
     public void onSaveButtonClick(final ClickEvent<JmixButton> event) {
         LeaveRequest item = leaveRequestDc.getItem();
@@ -122,6 +131,21 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
         }
 
         calculateWorkingDays(item);
+
+        User currentUser = getCurrentUser();
+        Integer requestedDays = item.getWorkingDays() != null ? item.getWorkingDays() : 0;
+
+        String leaveTypeName = item.getLeaveType() != null ? item.getLeaveType().getName() : null;
+        Map<String, Integer> leaveTypeCounts = userLeaveSummaryService.getLeaveTypeCountsForUser(currentUser);
+        Integer availableTypeDays = leaveTypeName != null ? leaveTypeCounts.getOrDefault(leaveTypeName, 0) : 0;
+
+        if (requestedDays > availableTypeDays) {
+            dialogs.createMessageDialog()
+                    .withHeader("Insufficient " + leaveTypeName + " Balance")
+                    .withText("You have only " + availableTypeDays + " " + leaveTypeName + " days left, but you requested " + requestedDays + " days.")
+                    .open();
+            return;
+        }
 
         dataContext.save();
         leaveRequestsDc.replaceItem(item);
