@@ -3,8 +3,10 @@ package com.company.hrmsystem.view.leaverequest;
 import com.company.hrmsystem.entity.LeaveRequest;
 import com.company.hrmsystem.entity.LeaveStatus;
 import com.company.hrmsystem.entity.User;
+import com.company.hrmsystem.service.LeaveRequestService;
 import com.company.hrmsystem.view.main.MainView;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValueAndElement;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -20,8 +22,11 @@ import io.jmix.flowui.kit.action.ActionPerformedEvent;
 import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.model.*;
 import io.jmix.flowui.view.*;
+import io.jmix.flowui.Dialogs;
 import io.jmix.core.security.CurrentAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Map;
 
 @Route(value = "create-leave-requests", layout = MainView.class)
 @ViewController(id = "CreateLeaveRequest.list")
@@ -108,6 +113,12 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
         updateControls(true);
     }
 
+    @Autowired
+    private com.company.hrmsystem.service.UserLeaveSummaryService userLeaveSummaryService;
+
+    @Autowired
+    private Dialogs dialogs;
+
     @Subscribe("saveButton")
     public void onSaveButtonClick(final ClickEvent<JmixButton> event) {
         LeaveRequest item = leaveRequestDc.getItem();
@@ -118,6 +129,24 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
             viewValidation.focusProblemComponent(validationErrors);
             return;
         }
+
+        calculateWorkingDays(item);
+
+        User currentUser = getCurrentUser();
+        Integer requestedDays = item.getWorkingDays() != null ? item.getWorkingDays() : 0;
+
+        String leaveTypeName = item.getLeaveType() != null ? item.getLeaveType().getName() : null;
+        Map<String, Integer> leaveTypeCounts = userLeaveSummaryService.getLeaveTypeCountsForUser(currentUser);
+        Integer availableTypeDays = leaveTypeName != null ? leaveTypeCounts.getOrDefault(leaveTypeName, 0) : 0;
+
+        if (requestedDays > availableTypeDays) {
+            dialogs.createMessageDialog()
+                    .withHeader("Insufficient " + leaveTypeName + " Balance")
+                    .withText("You have only " + availableTypeDays + " " + leaveTypeName + " days left, but you requested " + requestedDays + " days.")
+                    .open();
+            return;
+        }
+
         dataContext.save();
         leaveRequestsDc.replaceItem(item);
         updateControls(false);
@@ -169,5 +198,36 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
 
     private ViewValidation getViewValidation() {
         return getApplicationContext().getBean(ViewValidation.class);
+    }
+
+
+    @Subscribe("startDateField")
+    public void onStartDateFieldValueChange(final HasValue.ValueChangeEvent<?> event) {
+        updateWorkingDays();
+    }
+
+    @Subscribe("endDateField")
+    public void onEndDateFieldValueChange(final HasValue.ValueChangeEvent<?> event) {
+        updateWorkingDays();
+    }
+
+    private void updateWorkingDays() {
+        LeaveRequest item = leaveRequestDc.getItem();
+        if (item != null && item.getStartDate() != null && item.getEndDate() != null) {
+            calculateWorkingDays(item);
+        }
+    }
+
+    private void calculateWorkingDays(LeaveRequest leaveRequest) {
+        // Get the LeaveRequestService from the application context
+        LeaveRequestService leaveRequestService = getApplicationContext().getBean(LeaveRequestService.class);
+
+        // Calculate working days
+        Integer workingDays = leaveRequestService.calculateWorkingDays(
+                leaveRequest.getStartDate(),
+                leaveRequest.getEndDate());
+
+        // Set the calculated working days
+        leaveRequest.setWorkingDays(workingDays);
     }
 }

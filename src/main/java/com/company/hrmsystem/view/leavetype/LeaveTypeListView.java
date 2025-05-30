@@ -12,4 +12,5 @@ import io.jmix.flowui.view.*;
 @LookupComponent("leaveTypesDataGrid")
 @DialogMode(width = "64em")
 public class LeaveTypeListView extends StandardListView<LeaveType> {
+
 }

@@ -1,6 +1,8 @@
 package com.company.hrmsystem.entity;
 
+import io.jmix.core.DataManager;
 import io.jmix.core.DeletePolicy;
+import io.jmix.core.FetchPlan;
 import io.jmix.core.HasTimeZone;
 import io.jmix.core.annotation.Secret;
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
@@ -14,7 +16,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
+import com.company.hrmsystem.service.LeaveCalculationService;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -78,6 +83,13 @@ public class User implements JmixUserDetails, HasTimeZone {
     @Transient
     private Collection<? extends GrantedAuthority> authorities;
 
+    @Transient
+    @Autowired
+    private DataManager dataManager;
+
+    @Transient
+    @Autowired
+    private ApplicationContext applicationContext;
 
     public void setJoinedDate(LocalDate joinedDate) {
         this.joinedDate = joinedDate;
@@ -94,6 +106,7 @@ public class User implements JmixUserDetails, HasTimeZone {
     public void setTotalLeaves(Integer totalLeaves) {
         this.totalLeaves = totalLeaves;
     }
+
     public Integer getVersion() {
         return version;
     }
@@ -219,36 +232,78 @@ public class User implements JmixUserDetails, HasTimeZone {
     }
 
     /**
-     * Calculates the total leaves a user is eligible for based on their join date.
-     * Users get 36 leaves per year (3 per month) pro-rated for the remaining months of the join year.
+     * Calculates the total leaves based on the sum of all active leave types,
+     * pro-rated according to the joined month if the user joined in the current year.
      */
     public void calculateInitialLeaves() {
         if (joinedDate == null) {
             return;
         }
 
-        // Default annual leave allowance is 36 days (3 per month)
+        // Get the total days from active leave types
+        int totalLeaveDays;
+
+        try {
+            // Try using dataManager if available
+            if (dataManager != null) {
+                totalLeaveDays = getTotalLeaveTypesDays();
+            } else {
+                // Use a static method from a service to get total days
+                totalLeaveDays = LeaveCalculationService.getStaticTotalLeaveDays();
+            }
+
+            System.out.println("Calculated total leave days: " + totalLeaveDays + " for user: " + getUsername());
+
+            final int MONTHS_IN_YEAR = 12;
+            final double LEAVES_PER_MONTH = (double) totalLeaveDays / MONTHS_IN_YEAR;
+
+            LocalDate currentDate = LocalDate.now();
+
+            // If joined in current year, calculate pro-rated leaves
+            if (joinedDate.getYear() == currentDate.getYear()) {
+                int joiningMonth = joinedDate.getMonthValue();
+                int remainingMonths = MONTHS_IN_YEAR - joiningMonth;
+                int proRatedLeaves = (int) Math.round(remainingMonths * LEAVES_PER_MONTH);
+                setTotalLeaves(proRatedLeaves);
+            } else {
+                setTotalLeaves(totalLeaveDays);
+            }
+        } catch (Exception e) {
+            System.err.println("Error calculating leaves: " + e.getMessage());
+            fallbackCalculateLeaves();
+        }
+    }
+
+    // Helper method to get total days from leave types
+    private int getTotalLeaveTypesDays() {
+        return dataManager.load(LeaveType.class)
+                .query("select e from LeaveType e where e.active = true")
+                .fetchPlan(FetchPlan.BASE)
+                .list()
+                .stream()
+                .mapToInt(LeaveType::getNoOfDays)
+                .sum();
+    }
+
+
+    @PrePersist
+    public void onPostLoadAndPrePersist() {
+        calculateInitialLeaves();
+    }
+
+    public void fallbackCalculateLeaves() {
         final int ANNUAL_LEAVE_DAYS = 36;
         final int MONTHS_IN_YEAR = 12;
         final double LEAVES_PER_MONTH = (double) ANNUAL_LEAVE_DAYS / MONTHS_IN_YEAR;
 
         LocalDate currentDate = LocalDate.now();
 
-        // If joined in current year, calculate pro-rated leaves
         if (joinedDate.getYear() == currentDate.getYear()) {
-            // Get the month after joining (1-based, January is 1)
             int joiningMonth = joinedDate.getMonthValue();
-
-            // Calculate remaining months in the year (excluding join month)
             int remainingMonths = MONTHS_IN_YEAR - joiningMonth;
-
-            // Calculate pro-rated leaves
             int proRatedLeaves = (int) Math.round(remainingMonths * LEAVES_PER_MONTH);
-
-            // Set the calculated leaves
             setTotalLeaves(proRatedLeaves);
         } else {
-            // If joined in previous years, set full annual leave
             setTotalLeaves(ANNUAL_LEAVE_DAYS);
         }
     }
@@ -257,12 +312,16 @@ public class User implements JmixUserDetails, HasTimeZone {
         // Default constructor
     }
 
-    @PostPersist
-    @PostLoad
+
     public void initializeLeaves() {
-        // If totalLeaves is not set, calculate it
-        if (totalLeaves == null) {
-            calculateInitialLeaves();
-        }
+        // Always recalculate leaves when the entity is loaded or updated
+        calculateInitialLeaves();
+    }
+
+    /**
+     * Method to refresh total leaves (can be called manually if needed)
+     */
+    public void refreshTotalLeaves() {
+        calculateInitialLeaves();
     }
 }

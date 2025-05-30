@@ -37,6 +37,11 @@
             </section>
         </drawerLayout>
         <initialLayout>
+            <vbox id="leaveSummaryBox" spacing="true">
+                <h3 text="Your Leave Summary"/>
+                <label id="sickLeaveLabel"/>
+                <label id="casualLeaveLabel"/>
+            </vbox>
         </initialLayout>
     </appLayout>
 </mainView>

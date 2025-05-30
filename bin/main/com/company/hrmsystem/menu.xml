@@ -8,6 +8,7 @@
         <item view="CreateLeaveRequest.list"
               title="msg://com.company.hrmsystem.view.leaverequest/createLeaveRequestListView.title"/>
         <item view="LeaveType.list" title="msg://com.company.hrmsystem.view.leavetype/leaveTypeListView.title"/>
+        <item view="Holiday.list" title="msg://com.company.hrmsystem.view.holiday/holidayListView.title"/>
     </menu>
 
 </menu-config>
