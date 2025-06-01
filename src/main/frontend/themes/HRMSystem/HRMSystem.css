@@ -1,1 +1,66 @@
-/* Define your styles here */
+html {
+    background-color: #f4f8fb;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    --lumo-primary-text-color: rgb(20, 67, 65);
+    --lumo-primary-color-50pct: rgba(20, 67, 65, 0.5);
+    --lumo-primary-color-10pct: rgba(20, 67, 65, 0.1);
+    --lumo-primary-color: hsl(178, 54%, 17%);
+    --lumo-success-text-color: hsl(178, 54%, 17%);
+}
+
+
+body {
+    margin: 0;
+    padding: 0;
+    color: var(--lumo-primary-text-color);
+}
+
+vaadin-password-field,
+vaadin-date-picker,
+vaadin-combo-box,
+jmix-entity-picker,
+vaadin-text-field {
+    --vaadin-text-field-default-width: 300px;
+    --vaadin-input-field-background-color: #ffffff;
+    --vaadin-input-field-value-color: var(--lumo-primary-text-color);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    /* No border color here */
+}
+
+vaadin-password-field:focus-within,
+vaadin-date-picker:focus-within,
+vaadin-combo-box:focus-within,
+jmix-entity-picker:focus-within,
+vaadin-text-field:focus-within {
+    --vaadin-input-field-border-width: 2px;
+    --vaadin-input-field-border-color: var(--lumo-success-text-color);
+}
+
+jmix-entity-picker::part(input-field) {
+    border-radius: 6px;
+    margin-bottom: 12px;
+    --vaadin-input-field-background-color: #ffffff;
+    --vaadin-input-field-value-color: var(--lumo-primary-text-color);
+}
+
+jmix-entity-picker:focus-within::part(input-field) {
+    --vaadin-input-field-border-width: 2px;
+    --vaadin-input-field-border-color: var(--lumo-success-text-color);
+}
+
+@mixin com_company_hrmsystem {
+    .dashboard-container {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .dashboard-card {
+        background-color: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+}

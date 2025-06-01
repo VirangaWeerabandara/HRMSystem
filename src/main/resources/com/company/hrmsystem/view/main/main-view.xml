@@ -37,11 +37,19 @@
             </section>
         </drawerLayout>
         <initialLayout>
-            <vbox id="leaveSummaryBox" spacing="true">
-                <h3 text="Your Leave Summary"/>
-                <label id="sickLeaveLabel"/>
-                <label id="casualLeaveLabel"/>
+            <vbox id="dashboard" spacing="true" classNames="dashboard-container">
+
+                <vbox id="leaveSummaryCard" classNames="dashboard-card">
+                    <h3 text="Your Leave Summary"/>
+                    <span id="totalLeavesLabel"/>
+                    <span id="sickLeaveLabel"/>
+                    <span id="casualLeaveLabel"/>
+                    <span id="proratedSickLeaveLabel"/>
+                    <span id="proratedCasualLeaveLabel"/>
+                </vbox>
             </vbox>
         </initialLayout>
+
+
     </appLayout>
 </mainView>

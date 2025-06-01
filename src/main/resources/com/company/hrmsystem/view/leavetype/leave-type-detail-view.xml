@@ -25,6 +25,7 @@
             <textField id="nameField" property="name"/>
             <checkbox id="activeField" property="active"/>
             <textField id="noOfDaysField" property="noOfDays"/>
+            <checkbox id="proratedField" property="prorated"/>
         </formLayout>
         <hbox id="detailActions">
             <button id="saveAndCloseButton" action="saveAction"/>

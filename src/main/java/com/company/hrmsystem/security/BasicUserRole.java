@@ -9,15 +9,15 @@ import io.jmix.security.role.annotation.ResourceRole;
 import io.jmix.securityflowui.role.annotation.MenuPolicy;
 import io.jmix.securityflowui.role.annotation.ViewPolicy;
 
-@ResourceRole(name = "BasicUser", code = BasicUserRole.CODE)
+@ResourceRole(name = "BasicUserRole", code = BasicUserRole.CODE)
 public interface BasicUserRole {
-    String CODE = "basic-user";
+    String CODE = "basic-user-role";
 
     @EntityAttributePolicy(entityClass = LeaveRequest.class, attributes = "*", action = EntityAttributePolicyAction.MODIFY)
     @EntityPolicy(entityClass = LeaveRequest.class, actions = EntityPolicyAction.ALL)
     void leaveRequest();
 
     @MenuPolicy(menuIds = "CreateLeaveRequest.list")
-    @ViewPolicy(viewIds = "CreateLeaveRequest.list")
+    @ViewPolicy(viewIds = {"CreateLeaveRequest.list", "LeaveRequest.detail"})
     void screens();
 }

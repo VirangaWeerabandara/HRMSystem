@@ -50,6 +50,7 @@
                 <column property="name"/>
                 <column property="active"/>
                 <column property="noOfDays"/>
+                <column property="prorated"/>
             </columns>
         </dataGrid>
         <hbox id="lookupActions" visible="false">

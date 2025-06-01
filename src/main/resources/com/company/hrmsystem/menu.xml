@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://jmix.io/schema/flowui/menu">
 
-    <menu id="application" title="msg://com.company.hrmsystem/menu.application.title" opened="true">
+    <menu opened="true" id="application" title="msg://com.company.hrmsystem/menu.application.title">
         <item view="User.list" title="msg://com.company.hrmsystem.view.user/UserListView.title"/>
         <item view="LeaveRequest.list"
-              title="msg://com.company.hrmsystem.view.leaverequest/leaveRequestListView.title"/>
-        <item view="CreateLeaveRequest.list"
-              title="msg://com.company.hrmsystem.view.leaverequest/createLeaveRequestListView.title"/>
+              description="msg://com.company.hrmsystem/menu_config.LeaveRequest.list.description"
+              title="msg://com.company.hrmsystem/menu_config.LeaveRequest.list.title"/>
         <item view="LeaveType.list" title="msg://com.company.hrmsystem.view.leavetype/leaveTypeListView.title"/>
         <item view="Holiday.list" title="msg://com.company.hrmsystem.view.holiday/holidayListView.title"/>
+        <item view="CreateLeaveRequest.list"
+              description="msg://com.company.hrmsystem/menu_config.CreateLeaveRequest.list.description"
+              title="msg://com.company.hrmsystem/menu_config.CreateLeaveRequest.list.title"/>
     </menu>
-
 </menu-config>
