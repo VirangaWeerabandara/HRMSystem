@@ -12,6 +12,7 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
+import io.jmix.core.DataManager;
 import io.jmix.flowui.component.validation.ValidationErrors;
 import io.jmix.core.validation.group.UiCrossFieldChecks;
 import io.jmix.flowui.action.SecuredBaseAction;
@@ -119,8 +120,12 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
     @Autowired
     private Dialogs dialogs;
 
+    @Autowired
+    private DataManager dataManager;
+
     @Subscribe("saveButton")
     public void onSaveButtonClick(final ClickEvent<JmixButton> event) {
+        leaveRequestsDl.load();
         LeaveRequest item = leaveRequestDc.getItem();
         ValidationErrors validationErrors = validateView(item);
         if (!validationErrors.isEmpty()) {
@@ -129,14 +134,15 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
             viewValidation.focusProblemComponent(validationErrors);
             return;
         }
-
         calculateWorkingDays(item);
 
-        User currentUser = getCurrentUser();
+        User user = (User) currentAuthentication.getUser();
+        // Reload user from DB to get the latest totalLeaves
+        user = dataManager.load(User.class).id(user.getId()).one();
         Integer requestedDays = item.getWorkingDays() != null ? item.getWorkingDays() : 0;
 
         String leaveTypeName = item.getLeaveType() != null ? item.getLeaveType().getName() : null;
-        Map<String, Integer> leaveTypeCounts = userLeaveSummaryService.getLeaveTypeCountsForUser(currentUser);
+        Map<String, Integer> leaveTypeCounts = userLeaveSummaryService.getLeaveTypeCountsForUser(user);
         Integer availableTypeDays = leaveTypeName != null ? leaveTypeCounts.getOrDefault(leaveTypeName, 0) : 0;
 
         if (requestedDays > availableTypeDays) {
