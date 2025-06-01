@@ -21,6 +21,9 @@ public class LeaveType {
     @Id
     private UUID id;
 
+    @Column(name = "PRORATED")
+    private Boolean prorated;
+
     @InstanceName
     @Column(name = "NAME", nullable = false)
     @NotNull
@@ -33,6 +36,14 @@ public class LeaveType {
     @Column(name = "NO_OF_DAYS", nullable = false)
     @NotNull
     private Integer noOfDays;
+
+    public Boolean getProrated() {
+        return prorated;
+    }
+
+    public void setProrated(Boolean prorated) {
+        this.prorated = prorated;
+    }
 
     public Boolean getActive() {
         return active;
