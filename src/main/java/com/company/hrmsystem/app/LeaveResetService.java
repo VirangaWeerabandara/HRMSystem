@@ -15,7 +15,7 @@ public class LeaveResetService {
     @Autowired
     private DataManager dataManager;
 
-    @Scheduled(cron = "0 1 0 1 1 *") // Run at 00:01 AM on January 1st
+    @Scheduled(cron = "0 1 0 1 1 *")
     @Transactional
     public void resetAnnualLeaves() {
         List<User> users = dataManager.load(User.class)
@@ -23,7 +23,6 @@ public class LeaveResetService {
                 .list();
 
         for (User user : users) {
-            // Use the refreshTotalLeaves method instead of fixed constant
             user.refreshTotalLeaves();
             dataManager.save(user);
         }

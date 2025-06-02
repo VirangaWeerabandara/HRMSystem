@@ -23,12 +23,10 @@ public class LeaveCalculationService {
 
     private void injectDependencies(User user) {
         try {
-            // Use reflection to set the dataManager field
             java.lang.reflect.Field dataManagerField = User.class.getDeclaredField("dataManager");
             dataManagerField.setAccessible(true);
             dataManagerField.set(user, dataManager);
 
-            // Set application context
             java.lang.reflect.Field appContextField = User.class.getDeclaredField("applicationContext");
             appContextField.setAccessible(true);
             appContextField.set(user, applicationContext);
@@ -37,21 +35,17 @@ public class LeaveCalculationService {
         }
     }
 
-    // Static value for total leave days (will be updated when service methods run)
     private static int totalActiveLeaveDays = 0;
 
-    // Static method to get total leave days
     public static int getStaticTotalLeaveDays() {
         return totalActiveLeaveDays > 0 ? totalActiveLeaveDays : 36; // Default to 36 if not yet calculated
     }
 
-    // Update the static value when recalculating
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void recalculateLeavesForAllUsers() {
         try {
             System.out.println("Recalculating leaves for all users");
 
-            // First, update the static total leave days
             List<LeaveType> activeLeaveTypes = dataManager.load(LeaveType.class)
                     .query("select e from LeaveType e where e.active = true")
                     .fetchPlan(FetchPlan.BASE)
@@ -63,7 +57,6 @@ public class LeaveCalculationService {
 
             System.out.println("Total active leave days: " + totalActiveLeaveDays);
 
-            // Get all users
             List<User> users = dataManager.load(User.class)
                     .all()
                     .list();
@@ -77,11 +70,9 @@ public class LeaveCalculationService {
                     injectDependencies(user);
 
                     if (noActiveLeaveTypes) {
-                        // If no active leave types, use fallback calculation
                         user.fallbackCalculateLeaves();
                         System.out.println("Using fallback calculation for user: " + user.getUsername());
                     } else {
-                        // Otherwise use normal calculation
                         user.calculateInitialLeaves();
                     }
 

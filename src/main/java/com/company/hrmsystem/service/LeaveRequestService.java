@@ -16,23 +16,18 @@ public class LeaveRequestService {
     @Autowired
     private DataManager dataManager;
 
-    /**
-     * Calculates working days between two dates, excluding weekends and holidays
-     */
+
     public int calculateWorkingDays(LocalDate startDate, LocalDate endDate) {
         if (startDate == null || endDate == null || endDate.isBefore(startDate)) {
             return 0;
         }
 
-        // Get all holidays in the date range
         List<LocalDate> holidays = loadHolidaysBetweenDates(startDate, endDate);
 
         int workingDays = 0;
         LocalDate currentDate = startDate;
 
-        // Iterate through each day in the range
         while (!currentDate.isAfter(endDate)) {
-            // Check if the current date is a working day (not weekend and not holiday)
             if (!isWeekend(currentDate) && !holidays.contains(currentDate)) {
                 workingDays++;
             }

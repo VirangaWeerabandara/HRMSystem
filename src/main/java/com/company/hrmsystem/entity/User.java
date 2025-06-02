@@ -1,5 +1,6 @@
 package com.company.hrmsystem.entity;
 
+import com.company.hrmsystem.service.LeaveCalculationService;
 import io.jmix.core.DataManager;
 import io.jmix.core.DeletePolicy;
 import io.jmix.core.FetchPlan;
@@ -17,9 +18,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;
-import com.company.hrmsystem.service.LeaveCalculationService;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -47,7 +46,7 @@ public class User implements JmixUserDetails, HasTimeZone {
     @Column(name = "JOINED_DATE", nullable = false)
     private LocalDate joinedDate;
 
-    @OnDeleteInverse(DeletePolicy.CASCADE)
+    @OnDeleteInverse(DeletePolicy.UNLINK)
     @JoinColumn(name = "MANAGER_ID")
     @ManyToOne(fetch = FetchType.LAZY)
     private User manager;
@@ -82,14 +81,6 @@ public class User implements JmixUserDetails, HasTimeZone {
 
     @Transient
     private Collection<? extends GrantedAuthority> authorities;
-
-    @Transient
-    @Autowired
-    private DataManager dataManager;
-
-    @Transient
-    @Autowired
-    private ApplicationContext applicationContext;
 
     public void setJoinedDate(LocalDate joinedDate) {
         this.joinedDate = joinedDate;
@@ -231,24 +222,21 @@ public class User implements JmixUserDetails, HasTimeZone {
         this.timeZoneId = timeZoneId;
     }
 
-    /**
-     * Calculates the total leaves based on the sum of all active leave types,
-     * pro-rated according to the joined month if the user joined in the current year.
-     */
+    @Transient
+    @Autowired
+    private DataManager dataManager;
+
     public void calculateInitialLeaves() {
         if (joinedDate == null) {
             return;
         }
 
-        // Get the total days from active leave types
         int totalLeaveDays;
 
         try {
-            // Try using dataManager if available
             if (dataManager != null) {
                 totalLeaveDays = getTotalLeaveTypesDays();
             } else {
-                // Use a static method from a service to get total days
                 totalLeaveDays = LeaveCalculationService.getStaticTotalLeaveDays();
             }
 
@@ -309,18 +297,13 @@ public class User implements JmixUserDetails, HasTimeZone {
     }
 
     public User() {
-        // Default constructor
     }
 
 
     public void initializeLeaves() {
-        // Always recalculate leaves when the entity is loaded or updated
         calculateInitialLeaves();
     }
 
-    /**
-     * Method to refresh total leaves (can be called manually if needed)
-     */
     public void refreshTotalLeaves() {
         calculateInitialLeaves();
     }

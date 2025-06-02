@@ -18,7 +18,6 @@ public class LeaveTypeChangedListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onLeaveTypeChangedAfterCommit(EntityChangedEvent<LeaveType> event) {
-        // Only trigger recalculation for specific change types
         EntityChangedEvent.Type changeType = event.getType();
 
         if (changeType == EntityChangedEvent.Type.CREATED ||
@@ -27,7 +26,6 @@ public class LeaveTypeChangedListener {
 
             System.out.println("Significant LeaveType change detected: " + changeType);
 
-            // For updates, check if relevant fields changed
             if (changeType == EntityChangedEvent.Type.UPDATED) {
                 boolean relevantFieldChanged = event.getChanges().isChanged("active") ||
                         event.getChanges().isChanged("noOfDays");
@@ -38,14 +36,12 @@ public class LeaveTypeChangedListener {
                 }
             }
 
-            // Recalculate for all significant events including deletion
             leaveCalculationService.recalculateLeavesForAllUsers();
         } else {
             System.out.println("Non-significant LeaveType event detected: " + changeType);
         }
     }
 
-    // Keep this method for logging purposes
     @EventListener
     public void onAnyLeaveTypeEvent(EntityChangedEvent<LeaveType> event) {
         System.out.println("Any LeaveType event detected: " + event.getType());

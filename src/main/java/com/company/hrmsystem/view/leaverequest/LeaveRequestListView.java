@@ -18,15 +18,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 @DialogMode(width = "64em")
 public class LeaveRequestListView extends StandardListView<LeaveRequest> {
 
+    @Autowired
+    private DialogWindows dialogWindows;
+
     @Subscribe("leaveRequestsDataGrid")
     public void onLeaveRequestsDataGridItemDoubleClick(final ItemDoubleClickEvent<LeaveRequest> event) {
         LeaveRequest leaveRequest = event.getItem();
         if (leaveRequest != null) {
-            // Navigate to the detail view with the selected item
-            UI.getCurrent().navigate(
-                    LeaveRequestDetailView.class,
-                    new RouteParameters("id", leaveRequest.getId().toString())
-            );
+            dialogWindows.detail(this, LeaveRequest.class)
+                    .editEntity(leaveRequest)
+                    .open();
         }
     }
 }
