@@ -37,19 +37,35 @@
             </section>
         </drawerLayout>
         <initialLayout>
-            <vbox id="dashboard" spacing="true" classNames="dashboard-container">
+            <vbox id="dashboard" spacing="true" classNames="dashboard-container" width="100%" alignItems="CENTER">
+                <h1 text="Dashboard" classNames="dashboard-title"/>
 
-                <vbox id="leaveSummaryCard" classNames="dashboard-card">
-                    <h3 text="Your Leave Summary"/>
-                    <span id="totalLeavesLabel"/>
-                    <span id="sickLeaveLabel"/>
-                    <span id="casualLeaveLabel"/>
-                    <span id="proratedSickLeaveLabel"/>
-                    <span id="proratedCasualLeaveLabel"/>
-                </vbox>
+                <hbox spacing="true" width="100%" classNames="leave-cards-container">
+                    <vbox id="totalLeaveCard" themeNames="card" classNames="dashboard-card uniform-card" height="250px" width="0" flexGrow="1">
+                        <h3 text="Total Leave Allocation"/>
+                        <div classNames="card-content total-allocation-container">
+                            <span id="totalLeavesLabel" classNames="total-allocation-value"/>
+                        </div>
+                    </vbox>
+
+                    <vbox id="availableLeaveCard" themeNames="card" classNames="dashboard-card uniform-card" height="250px" width="0" flexGrow="1">
+                        <h3 text="Available Leaves"/>
+                        <div id="availableLeavesContainer" classNames="card-content scrollable"/>
+                    </vbox>
+                </hbox>
+
+                <hbox spacing="true" width="100%" classNames="leave-cards-container">
+                    <vbox id="consumedLeaveCard" themeNames="card" classNames="dashboard-card uniform-card" height="250px" width="0" flexGrow="1">
+                        <h3 text="Consumed Leaves"/>
+                        <div id="consumedLeavesContainer" classNames="card-content scrollable"/>
+                    </vbox>
+
+                    <vbox id="pendingLeaveCard" themeNames="card" classNames="dashboard-card uniform-card" height="250px" width="0" flexGrow="1">
+                        <h3 text="Pending Leaves"/>
+                        <div id="pendingLeavesContainer" classNames="card-content scrollable"/>
+                    </vbox>
+                </hbox>
             </vbox>
         </initialLayout>
-
-
     </appLayout>
 </mainView>

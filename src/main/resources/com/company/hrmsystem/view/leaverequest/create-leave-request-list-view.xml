@@ -24,6 +24,15 @@
             </fetchPlan>
             <loader id="leaveRequestDl"/>
         </instance>
+        <collection id="leaveTypesDc"
+                    class="com.company.hrmsystem.entity.LeaveType">
+            <fetchPlan extends="_base"/>
+            <loader id="leaveTypesDl">
+                <query>
+                    <![CDATA[select e from LeaveType e order by e.name]]>
+                </query>
+            </loader>
+        </collection>
     </data>
     <facets>
         <dataLoadCoordinator auto="true"/>
@@ -76,12 +85,11 @@
                     <datePicker id="startDateField" property="startDate"/>
                     <datePicker id="endDateField" property="endDate"/>
                     <textArea id="reasonField" height="9.5em" property="reason"/>
-                    <entityPicker id="leaveTypeField" property="leaveType">
-                        <actions>
-                            <action id="entityLookup" type="entity_lookup"/>
-                            <action id="entityClear" type="entity_clear"/>
-                        </actions>
-                    </entityPicker>
+                    <comboBox id="leaveTypeField"
+                              property="leaveType"
+                              itemsContainer="leaveTypesDc"
+                              itemLabelGenerator="#{item.name}"
+                              required="true"/>
                 </formLayout>
                 <hbox id="detailActions">
                     <button id="saveButton" text="msg:///actions.Save" icon="CHECK" themeNames="primary"/>

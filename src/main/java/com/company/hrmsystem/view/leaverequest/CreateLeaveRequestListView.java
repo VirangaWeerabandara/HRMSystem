@@ -26,6 +26,11 @@ import io.jmix.flowui.view.*;
 import io.jmix.flowui.Dialogs;
 import io.jmix.core.security.CurrentAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.company.hrmsystem.entity.LeaveType;
+import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
+
 
 import java.util.Map;
 
@@ -63,6 +68,12 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
     @ViewComponent
     private HorizontalLayout detailActions;
 
+    @ViewComponent
+    private CollectionLoader<LeaveType> leaveTypesDl;
+
+    @ViewComponent
+    private CollectionContainer<LeaveType> leaveTypesDc;
+
     @Autowired
     private CurrentAuthentication currentAuthentication;
 
@@ -75,12 +86,24 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
         });
     }
 
+    @ViewComponent
+    private ComboBox<LeaveType> leaveTypeField;
+
     @Subscribe
     public void onBeforeShow(final BeforeShowEvent event) {
-        // Set current user parameter for filtering leave requests
         User currentUser = getCurrentUser();
         leaveRequestsDl.setParameter("currentUser", currentUser);
         leaveRequestsDl.load();
+
+        // Load leave types
+        leaveTypesDl.load();
+
+        // Debug: Print loaded types
+        System.out.println("Loaded leave types: " + leaveTypesDc.getItems().size());
+
+        // Set items directly on the comboBox
+        leaveTypeField.setItems(leaveTypesDc.getItems());
+
         updateControls(false);
     }
 
@@ -196,6 +219,11 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
                 field.setReadOnly(!editing);
             }
         });
+
+        // Make sure the ComboBox is explicitly enabled when in edit mode
+        if (leaveTypeField != null) {
+            leaveTypeField.setReadOnly(!editing);
+        }
 
         detailActions.setVisible(editing);
         listLayout.setEnabled(!editing);
