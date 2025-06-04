@@ -41,7 +41,7 @@ jobs:
         run: ./gradlew test
 
       - name: Build application
-        run: ./gradlew build -x test
+        run: ./gradlew build -x test -Pvaadin.productionMode=true
 
   docker-build-push:
     needs: build-and-test
@@ -58,6 +58,13 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -71,8 +78,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build application
-        run: ./gradlew build -x test
+      - name: Build application for production
+        run: ./gradlew build -x test -Pvaadin.productionMode=true
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -145,6 +152,7 @@ jobs:
               --restart unless-stopped \
               -p 8080:8080 \
               -e SPRING_PROFILES_ACTIVE=prod \
+              -e VAADIN_PRODUCTION_MODE=true \
               ${{ env.DOCKER_IMAGE }}:latest
 
             # Clean up unused images
