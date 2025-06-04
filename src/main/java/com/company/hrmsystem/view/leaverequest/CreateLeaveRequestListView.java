@@ -30,7 +30,8 @@ import com.company.hrmsystem.entity.LeaveType;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
-
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 
 import java.util.Map;
 
@@ -103,6 +104,33 @@ public class CreateLeaveRequestListView extends StandardListView<LeaveRequest> {
 
         // Set items directly on the comboBox
         leaveTypeField.setItems(leaveTypesDc.getItems());
+
+        // Configure custom renderer for leaveStatus column
+        leaveRequestsDataGrid.getColumnByKey("leaveStatus").setRenderer(
+                new ComponentRenderer<>(leaveRequest -> {
+                    LeaveStatus status = leaveRequest.getLeaveStatus();
+                    Span statusSpan = new Span(status != null ? status.name() : "");
+
+                    if (status != null) {
+                        switch (status) {
+                            case APPROVED:
+                                statusSpan.getElement().getStyle().set("color", "green");
+                                statusSpan.getElement().getStyle().set("font-weight", "bold");
+                                break;
+                            case REJECTED:
+                                statusSpan.getElement().getStyle().set("color", "red");
+                                statusSpan.getElement().getStyle().set("font-weight", "bold");
+                                break;
+                            case PENDING:
+                                statusSpan.getElement().getStyle().set("color", "#FFA500"); // Orange/Yellow
+                                statusSpan.getElement().getStyle().set("font-weight", "bold");
+                                break;
+                        }
+                    }
+
+                    return statusSpan;
+                })
+        );
 
         updateControls(false);
     }
