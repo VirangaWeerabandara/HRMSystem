@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 env:
-  DOCKER_IMAGE: your-dockerhub-username/hrmsystem
+  DOCKER_IMAGE: ${{ secrets.DOCKER_USERNAME }}/hrmsystem
   DIGITAL_OCEAN_DROPLET_IP: ${{ secrets.DIGITAL_OCEAN_DROPLET_IP }}
 
 jobs:
