@@ -24,6 +24,19 @@ jobs:
           java-version: "17"
           distribution: "temurin"
 
+      - name: Verify project structure
+        run: |
+          echo "=== Project Structure ==="
+          ls -la
+          echo "=== Checking for Gradle files ==="
+          ls -la gradle* || echo "No gradle files found"
+          echo "=== Checking build.gradle ==="
+          if [ -f "build.gradle" ]; then
+            echo "build.gradle exists"
+          else
+            echo "build.gradle NOT found"
+          fi
+
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -35,13 +48,42 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+        run: |
+          echo "=== Setting gradlew permissions ==="
+          if [ -f "./gradlew" ]; then
+            chmod +x gradlew
+            echo "gradlew permissions set"
+          else
+            echo "gradlew file not found!"
+            exit 1
+          fi
 
-      - name: Run tests
-        run: ./gradlew test
+      - name: Run tests with verbose output
+        run: |
+          echo "=== Starting tests ==="
+          ./gradlew test --info --stacktrace
+          echo "=== Tests completed ==="
 
-      - name: Build application
-        run: ./gradlew build -x test -Pvaadin.productionMode=true
+      - name: Build application with verbose output
+        run: |
+          echo "=== Starting build ==="
+          ./gradlew build -x test -Pvaadin.productionMode=true --info --stacktrace
+          echo "=== Build completed ==="
+          echo "=== Checking build artifacts ==="
+          ls -la build/libs/ || echo "No build artifacts found"
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: build/reports/tests/
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: build/libs/
 
   docker-build-push:
     needs: build-and-test
@@ -77,7 +119,11 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build application for production
-        run: ./gradlew build -x test -Pvaadin.productionMode=true
+        run: |
+          echo "=== Building for production ==="
+          ./gradlew build -x test -Pvaadin.productionMode=true --info
+          echo "=== Production build completed ==="
+          ls -la build/libs/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -110,6 +156,11 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Verify Docker image
+        run: |
+          echo "=== Docker images built ==="
+          echo "Tags: ${{ steps.meta.outputs.tags }}"
+
   deploy:
     needs: docker-build-push
     runs-on: ubuntu-latest
@@ -124,27 +175,48 @@ jobs:
           key: ${{ secrets.DIGITAL_OCEAN_SSH_KEY }}
           port: ${{ secrets.DIGITAL_OCEAN_SSH_PORT || 22 }}
           script: |
+            echo "=== Starting deployment ==="
+            
             # Update system packages
+            echo "=== Updating system packages ==="
             sudo apt-get update
 
             # Install Docker and Docker Compose if not already installed
+            echo "=== Checking Docker installation ==="
             if ! command -v docker &> /dev/null; then
+              echo "Installing Docker..."
               curl -fsSL https://get.docker.com -o get-docker.sh
               sudo sh get-docker.sh
               sudo usermod -aG docker $USER
+              echo "Docker installed"
+            else
+              echo "Docker already installed"
             fi
 
             # Install Docker Compose if not already installed
+            echo "=== Checking Docker Compose installation ==="
             if ! command -v docker-compose &> /dev/null; then
+              echo "Installing Docker Compose..."
               sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
+              echo "Docker Compose installed"
+            else
+              echo "Docker Compose already installed"
             fi
 
+            # Verify installations
+            echo "=== Verifying installations ==="
+            docker --version
+            docker-compose --version
+
             # Create application directory
+            echo "=== Setting up application directory ==="
             mkdir -p ~/hrmsystem
             cd ~/hrmsystem
+            echo "Current directory: $(pwd)"
 
             # Create docker-compose.yml file
+            echo "=== Creating docker-compose.yml ==="
             cat > docker-compose.yml << EOF
             version: '3.8'
             services:
@@ -160,21 +232,45 @@ jobs:
                   - VAADIN_PRODUCTION_MODE=true
             EOF
 
+            echo "=== Docker Compose file created ==="
+            cat docker-compose.yml
+
             # Login to Docker Hub
+            echo "=== Logging into Docker Hub ==="
             echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
             # Pull the latest image
+            echo "=== Pulling latest Docker image ==="
             docker pull ${{ env.DOCKER_IMAGE }}:latest
 
             # Stop existing services
-            docker-compose down
+            echo "=== Stopping existing services ==="
+            docker-compose down || echo "No existing services to stop"
+
+            # Create database directory if it doesn't exist
+            echo "=== Creating database directory ==="
+            mkdir -p ./hsqldb_data
+            ls -la ./hsqldb_data || echo "Database directory is empty (new deployment)"
 
             # Start services with the new image
+            echo "=== Starting services ==="
             docker-compose up -d
 
+            # Wait a moment for services to start
+            echo "=== Waiting for services to start ==="
+            sleep 10
+
             # Clean up unused images
+            echo "=== Cleaning up unused Docker images ==="
             docker image prune -f
 
             # Show running containers
+            echo "=== Deployment status ==="
             docker-compose ps
             docker ps
+            
+            # Show logs for debugging
+            echo "=== Recent application logs ==="
+            docker-compose logs --tail=50 hrm-system || echo "No logs available yet"
+            
+            echo "=== Deployment completed ==="
