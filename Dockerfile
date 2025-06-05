@@ -4,6 +4,9 @@ FROM eclipse-temurin:17-jdk-alpine
 # Set the working directory
 WORKDIR /app
 
+# Create the database directory
+RUN mkdir -p /app/.jmix/hsqldb
+
 # Copy the built jar into the container
 COPY build/libs/HRMSystem-0.0.1-SNAPSHOT.jar /app/app.jar
 
