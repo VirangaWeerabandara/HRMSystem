@@ -153,11 +153,12 @@ jmix-entity-picker:focus-within::part(input-field) {
 }
 
 .total-allocation-value {
-    font-size: 3rem; /* Slightly larger */
+    font-size: 3rem;
     font-weight: bold;
-    color: var(--lumo-primary-color);
-    margin: 0; /* Remove any default margin */
-    line-height: 1.2; /* Tighter line height */
+    /*color: var(--lumo-primary-color);*/
+    color: black;
+    margin: 0;
+    line-height: 1.2;
 }
 
 .clickable-row:hover {
